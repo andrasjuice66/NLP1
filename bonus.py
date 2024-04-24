@@ -1,8 +1,12 @@
 import numpy as np
 import pandas as pd
+import nltk
 from collections import Counter
 from itertools import islice, tee
 
+
+#nltk.download('averaged_perceptron_tagger')
+brown = nltk.corpus.brown
 # Helper functions
 def pairwise(iterable):
     "s -> (s0,s1), (s1,s2), (s2, s3), ..."
@@ -22,10 +26,10 @@ def calculate_pmi(word_count, pair_count, total_count, pair):
     return pmi
 
 # Load and preprocess the corpus
-with open('brown_100.txt', 'r') as file:
+#with open('brown_100.txt', 'r') as file:
     # Read all words from the corpus, split by whitespace and convert to lowercase
-    corpus = [word.lower() for line in file for word in line.split()]
-
+    #corpus = [word.lower() for line in file for word in line.split()]
+corpus = [word.lower() for sent in brown.sents() for word in sent]
 # Count the frequency of each word and each pair of successive words
 word_count = Counter(corpus)
 pair_count = Counter(pairwise(corpus))
