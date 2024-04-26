@@ -14,13 +14,11 @@ from sklearn.preprocessing import normalize
 from generate import GENERATE
 import codecs
 import random
-from sklearn.preprocessing import normalize
 
 # load the indices dictionary
 # implement code from part 1
 vocab = codecs.open("brown_vocab_100.txt")
 word_index_dict = {}
-
 for i, line in enumerate(vocab):
     word_index_dict[line.rstrip()] = i
 
@@ -39,6 +37,8 @@ print(len(word_index_dict))
 #TODO: initialize numpy 0s array
 f = codecs.open("brown_100.txt")
 counts = np.zeros((len(word_index_dict), len(word_index_dict)), dtype=int)
+counts_0 = np.zeros((len(word_index_dict), len(word_index_dict)), dtype=int)
+
 
 previous_word = '<s>'
 for line in f:
@@ -72,6 +72,37 @@ with codecs.open('smooth_probs.txt', 'w', encoding='utf-8') as out_file:
         out_file.write(f'p({next} | {prev}): {probability:.7f}\n')
 
 f.close()
+
+
+
+smoothing_value = 1
+print(counts)
+smoothed_counts = smoothing_value + counts#_0
+smoothed_probs = normalize(smoothed_counts, norm='l1', axis=1)
+
+# Calculate and write out smoothed perplexities
+with codecs.open("toy_corpus.txt", "r", encoding='utf-8') as corpus_file, codecs.open("smoothed_eval.txt", "w", encoding='utf-8') as output_file:
+    for line in corpus_file:
+        words = ['<s>'] + line.lower().strip().split()
+        sentence_probability = 1.0
+        bigram_count = len(words) - 1 # Number of bigrams is one less than number of words
+        for i in range(len(words) - 1):
+            current_word = words[i]
+            next_word = words[i + 1]
+
+            if current_word in word_index_dict and next_word in word_index_dict:
+                current_index = word_index_dict[current_word]
+                next_index = word_index_dict[next_word]
+                sentence_probability *= smoothed_probs[current_index][next_index]
+            else:
+                sentence_probability *= 0  # Assign zero probability if any bigram includes out-of-vocabulary word
+
+        if sentence_probability > 0:
+            perplexity = pow(sentence_probability, -1.0 / bigram_count)
+        else:
+            perplexity = float('inf')  # Infinite perplexity if the sentence probability is zero
+
+        output_file.write(f'{perplexity}\n')
 
 
 
