@@ -30,9 +30,9 @@ with open('word_to_index_100.txt', 'w') as wf:
 
 
 
-print(word_index_dict['all'])
-print(word_index_dict['resolution'])
-print(len(word_index_dict))
+# print(word_index_dict['all'])
+# print(word_index_dict['resolution'])
+# print(len(word_index_dict))
 
 #TODO: initialize numpy 0s array
 f = codecs.open("brown_100.txt")
@@ -53,7 +53,7 @@ for line in f:
 #print(len(counts))
 
 counts = counts.astype(float)
-counts += 0.1
+#counts += 0.1
 
 
 #TODO: normalize counts
@@ -76,8 +76,8 @@ f.close()
 
 
 smoothing_value = 0
-print(counts)
-smoothed_counts = smoothing_value + counts#_0
+
+smoothed_counts = smoothing_value + counts
 smoothed_probs = normalize(smoothed_counts, norm='l1', axis=1)
 
 # Calculate and write out smoothed perplexities
@@ -94,6 +94,7 @@ with codecs.open("toy_corpus.txt", "r", encoding='utf-8') as corpus_file, codecs
                 current_index = word_index_dict[current_word]
                 next_index = word_index_dict[next_word]
                 sentence_probability *= smoothed_probs[current_index][next_index]
+                #print(sentence_probability)
             else:
                 sentence_probability *= 0  # Assign zero probability if any bigram includes out-of-vocabulary word
 
@@ -105,6 +106,7 @@ with codecs.open("toy_corpus.txt", "r", encoding='utf-8') as corpus_file, codecs
             perplexity = float('inf')  # Infinite perplexity if the sentence probability is zero
 
         output_file.write(f'{perplexity}\n')
+
 
 
 

@@ -39,6 +39,7 @@ with f as file:
 f.close()
 #print(counts)
 
+
 #TODO: normalize and writeout counts. 
 probs = counts / np.sum(counts)
 with open('unigram_probs.txt', 'w') as wf:

@@ -68,6 +68,8 @@ with codecs.open('bigram_probs.txt', 'w', encoding='utf-8') as out_file:
         out_file.write(f'p({next} | {prev}): {probability:.5f}\n')
 f.close()
 
+
+
 # Calculate and write out perplexities
 with codecs.open("toy_corpus.txt", "r", encoding='utf-8') as corpus_file, codecs.open("bigram_eval.txt", "w", encoding='utf-8') as output_file:
     for line in corpus_file:
