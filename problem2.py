@@ -37,7 +37,6 @@ with f as file:
             if word in word_index_dict:
                 counts[word_index_dict[word]] += 1
 f.close()
-#print(counts)
 
 
 #TODO: normalize and writeout counts. 
@@ -54,19 +53,26 @@ def calculate_sentence_probability(sentence, word_index_dict, unigram_probs):
     sentence_prob = 1.0
     sent_len = len(words)
     for word in words:
-        if word in word_index_dict:  # Check if the word is in the vocabulary
+        if word in word_index_dict:  
             sentence_prob *= unigram_probs[word_index_dict[word]]
         else:
-            sentence_prob *= 0  # Assign zero probability if word is not in the vocabulary
-
+            sentence_prob *= 0  #
     perplexity = 1/(pow(sentence_prob, 1.0/sent_len))
     return sentence_prob, perplexity 
 
-# Read sentences from the toy corpus and calculate their probabilities
 with open("toy_corpus.txt", 'r') as corpus_file, open('unigram_eval.txt', 'w') as output_file:
     for sentence in corpus_file:
-        sentence = sentence.strip()  # Remove the newline character
-        if sentence:  # Check if the sentence is not empty
+        sentence = sentence.strip()  
+        if sentence:  
             probability, perplexity = calculate_sentence_probability(sentence, word_index_dict, probs)
-            output_file.write(f'{perplexity}\n')  # Write the probability to the output file
+            output_file.write(f'{perplexity}\n')  
+
+
+#TASK 4.7
+with open('unigram_generation.txt', 'w') as output_file:
+    for i in range(10):
+        string = GENERATE(word_index_dict, probs, 'unigram', 10, '<s>')
+        output_file.write(f'{string}\n')
+
+
 

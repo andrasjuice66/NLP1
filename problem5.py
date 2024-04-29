@@ -1,30 +1,19 @@
 from nltk import bigrams, trigrams, FreqDist
+import re
 
-# Load the text data from the provided file and prepare to count bigrams and trigrams
 file_path = 'brown_100.txt'
-
-# Read the content of the file
 with open(file_path, 'r', encoding='utf-8') as file:
     text = file.read()
-
-# Preprocessing: split the text into words
-import re
 words = re.findall(r'\b\w+\b', text.lower())
 
-#print(words)
-# Generate bigrams and trigrams
+
 bigrams_list = list(bigrams(words))
 trigrams_list = list(trigrams(words))
-#print(bigrams_list, trigrams_list)
 
-# Calculate frequency distributions
 bigram_freq = FreqDist(bigrams_list)
 trigram_freq = FreqDist(trigrams_list)
 
 vocab_size = len(set(words))
-#print(bigram_freq, trigram_freq, vocab_size)
-print(bigram_freq)
-
 
 def trigram_probability(w1, w2, w3, bigram_counts, trigram_counts, vocab_size, alpha, smoothed=False):
     bigram = (w1, w2)
@@ -62,6 +51,8 @@ for w1, w2, w3 in trigrams_to_calculate:
     })
 
 print(probabilities)
+
+
 
 
 
