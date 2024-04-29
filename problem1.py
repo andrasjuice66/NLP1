@@ -22,7 +22,4 @@ with open('word_to_index_100.txt', 'w') as wf:
             wf.write(f'{word}: {idx}\n')
 
 
-
-print(word_index_dict['all'])
-print(word_index_dict['resolution'])
-print(len(word_index_dict))
+print(word_index_dict)

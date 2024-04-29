@@ -1,4 +1,8 @@
 from nltk import bigrams, trigrams, FreqDist
+import codecs
+from collections import Counter
+import re
+
 
 # Load the text data from the provided file and prepare to count bigrams and trigrams
 file_path = 'brown_100.txt'
@@ -8,23 +12,22 @@ with open(file_path, 'r', encoding='utf-8') as file:
     text = file.read()
 
 # Preprocessing: split the text into words
-import re
-words = re.findall(r'\b\w+\b', text.lower())
+words = re.findall(r'\b\w+\b|<s>|<\/s>', text.lower())
+#sentences = re.split(r'\s*</?s>\s*', text.strip())
 
-#print(words)
-# Generate bigrams and trigrams
+# Generate the bigrams and trigrams
 bigrams_list = list(bigrams(words))
 trigrams_list = list(trigrams(words))
-#print(bigrams_list, trigrams_list)
 
-# Calculate frequency distributions
-bigram_freq = FreqDist(bigrams_list)
-trigram_freq = FreqDist(trigrams_list)
+bigram_counts = Counter(bigrams_list)
+trigram_counts = Counter(trigrams_list)
 
-vocab_size = len(set(words))
-#print(bigram_freq, trigram_freq, vocab_size)
-print(bigram_freq)
+word_index_dict = {}
+with open("brown_vocab_100.txt", 'r') as file:
+        for index, line in enumerate(file):
+            word_index_dict[line.rstrip()] = index
 
+vocab_size = len(word_index_dict)
 
 def trigram_probability(w1, w2, w3, bigram_counts, trigram_counts, vocab_size, alpha, smoothed=False):
     bigram = (w1, w2)
@@ -53,8 +56,8 @@ trigrams_to_calculate = [
 # Calculate and print probabilities
 probabilities = []
 for w1, w2, w3 in trigrams_to_calculate:
-    unsmoothed_prob = trigram_probability(w1, w2, w3, bigram_freq, trigram_freq, vocab_size, alpha = 0.1, smoothed=False)
-    smoothed_prob = trigram_probability(w1, w2, w3, bigram_freq, trigram_freq, vocab_size, alpha = 0.1, smoothed=True)
+    unsmoothed_prob = trigram_probability(w1, w2, w3, bigram_counts, trigram_counts, vocab_size, alpha = 0.1, smoothed=False)
+    smoothed_prob = trigram_probability(w1, w2, w3, bigram_counts, trigram_counts, vocab_size, alpha = 0.1, smoothed=True)
     probabilities.append({
         'trigram': f'{w1} {w2} {w3}',
         'unsmoothed': unsmoothed_prob,

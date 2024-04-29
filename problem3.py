@@ -31,28 +31,22 @@ with open('word_to_index_100.txt', 'w') as wf:
             wf.write(f'{word}: {idx}\n')
 
 
-
-print(word_index_dict['all'])
-print(word_index_dict['resolution'])
-print(len(word_index_dict))
-
-
 #TODO: initialize numpy 0s array
 f = codecs.open("brown_100.txt")
+
 counts = np.zeros((len(word_index_dict), len(word_index_dict)), dtype=int)
+with codecs.open('debug.txt', 'w', encoding='utf-8') as out_file:
 
-previous_word = '<s>'
-for line in f:
-    words = line.lower().split()
-    for word in words:
-        if previous_word in word_index_dict and word in word_index_dict:
-            counts[word_index_dict[previous_word]][word_index_dict[word]] += 1
-        previous_word = word
-    previous_word = '<s>' 
+    for line in f:
+        previous_word = '<s>'
+        words = line.lower().split()
+        for word in words:
+            if word == "<s>":
+                continue
+            if previous_word in word_index_dict and word in word_index_dict:
+                counts[word_index_dict[previous_word]][word_index_dict[word]] += 1
+            previous_word = word
 
-
-#print(len(word_index_dict))
-#print(len(counts))
 
 #TODO: normalize counts
 probs = normalize(counts, norm='l1', axis=1)
@@ -68,11 +62,12 @@ with codecs.open('bigram_probs.txt', 'w', encoding='utf-8') as out_file:
         out_file.write(f'p({next} | {prev}): {probability:.5f}\n')
 f.close()
 
+#TASK4.6
+
 # Calculate and write out perplexities
 with codecs.open("toy_corpus.txt", "r", encoding='utf-8') as corpus_file, codecs.open("bigram_eval.txt", "w", encoding='utf-8') as output_file:
     for line in corpus_file:
         words = line.lower().strip().split()
-        print(words)
         sentence_probability = 1.0
         bigram_len = len(words) - 1
 
@@ -89,8 +84,15 @@ with codecs.open("toy_corpus.txt", "r", encoding='utf-8') as corpus_file, codecs
 
         if sentence_probability > 0:
             perplexity = pow(sentence_probability, -1.0 / bigram_len)
+            print(perplexity)
         else:
             perplexity = float('inf')  # Infinite perplexity if the sentence probability is zero
 
         output_file.write(f'{perplexity}\n')
+
+#TASK 4.7
+with open('bigram_generation.txt', 'w') as output_file:
+    for i in range(10):
+        string = GENERATE(word_index_dict, probs, 'bigram', 10, '<s>')
+        output_file.write(f'{string}\n')
 
